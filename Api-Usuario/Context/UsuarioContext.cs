@@ -14,5 +14,15 @@ namespace Api_Usuario.Context
             
         }
         public DbSet<Usuario> Usuarios { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Usuario>()
+                    .Property(p => p.Nombre)
+                    .HasMaxLength(50)
+                    .IsRequired();
+        }
     }
 }
