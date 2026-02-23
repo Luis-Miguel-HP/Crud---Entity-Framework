@@ -31,6 +31,10 @@ namespace Api_Usuario.Controllers
             BuscarUsuarioPorId(int ID) =>
             await _Iusuario.BuscarUsuarioPorId(ID);
 
+        [HttpGet("/VerTodosLosUsuarios")]
+
+        public async Task<ActionResult<Respuesta<List<Usuario>>>>
+            VerTodosLosUsuarios() => await _Iusuario.VerTodosLosUsuarios();
 
     }
 

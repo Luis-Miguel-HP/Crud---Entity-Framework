@@ -18,7 +18,10 @@ namespace Api_Usuario.Servicios
             var respuesta = new Respuesta<string>();
 
             try
+
+
             {
+                //aqui validamos en Usuarios para ver si al menos uno de esos usuarios tiene un correo igual al de user
                     var existe = await _usuarioContext.Usuarios
                     .AnyAsync(u => u.Correo == user.Correo);
 
@@ -64,6 +67,26 @@ namespace Api_Usuario.Servicios
             }
 
 
+        }
+
+        //metodo para ver todos los usuarios
+        public async Task<Respuesta<List<Usuario>>> VerTodosLosUsuarios()
+        {
+
+            var respuesta = new Respuesta<List<Usuario>>();
+            try
+            {
+                var res = await _usuarioContext.Usuarios.ToListAsync();
+                respuesta.SingleData = res;
+                return respuesta;
+
+
+            }
+            catch (Exception ex) {
+                respuesta.Successful = false;
+                respuesta.Errors.Add(ex.Message);
+                return respuesta;
+            }
         }
     }
 }
