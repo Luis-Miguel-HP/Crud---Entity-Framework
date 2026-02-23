@@ -24,7 +24,7 @@ namespace Api_Usuario.Controllers
            AgregarUsuario(Usuario user) =>  await _Iusuario.AgregarUsuario(user);
 
 
-        [HttpGet("buscarporId")]
+        [HttpGet("/buscarporId/{ID}")]
 
         public async Task<ActionResult<Respuesta<Usuario>>>
             
@@ -35,6 +35,19 @@ namespace Api_Usuario.Controllers
 
         public async Task<ActionResult<Respuesta<List<Usuario>>>>
             VerTodosLosUsuarios() => await _Iusuario.VerTodosLosUsuarios();
+
+
+        [HttpPut("Actualizar/{id}")]
+
+        public async Task<ActionResult<Respuesta<string>>>
+
+            ActualizarUsuario(int id, Usuario user) => await _Iusuario.ActualizarUsuario(id, user);
+
+        [HttpDelete("/EliminarUsuario")]
+
+        public async Task<ActionResult<Respuesta<string>>>
+            
+            EliminarUsuario(int ID) => await _Iusuario.EliminarUsuario(ID); 
 
     }
 

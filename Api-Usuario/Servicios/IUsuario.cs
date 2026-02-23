@@ -11,6 +11,9 @@ namespace Api_Usuario.Servicios
         Task<Respuesta<Usuario>> BuscarUsuarioPorId(int ID);
         Task<Respuesta<string>> AgregarUsuario(Usuario user);
 
+        Task<Respuesta<string>> ActualizarUsuario(int ID, Usuario user);
+
+        Task<Respuesta<string>> EliminarUsuario(int id);
    
 
     }

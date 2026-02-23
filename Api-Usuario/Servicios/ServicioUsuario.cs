@@ -13,6 +13,9 @@ namespace Api_Usuario.Servicios
         {
             _usuarioContext = contexto;
         }
+
+    
+
         public async Task<Respuesta<string>> AgregarUsuario(Usuario user)
         {
             var respuesta = new Respuesta<string>();
@@ -87,6 +90,75 @@ namespace Api_Usuario.Servicios
                 respuesta.Errors.Add(ex.Message);
                 return respuesta;
             }
+        }
+
+        public async Task<Respuesta<string>> ActualizarUsuario(int ID, Usuario user)
+        {
+            var respuesta = new Respuesta<string>();
+            try
+            {
+                var valid = await _usuarioContext.Usuarios.AnyAsync(p => p.Id == ID);
+
+                if (valid)
+                {
+                    _usuarioContext.Usuarios.Update(user);
+                    await _usuarioContext.SaveChangesAsync();
+                    respuesta.Successful = true;
+                    respuesta.Message = "Se guardó exitosamente la persona";
+                    return respuesta;
+
+                }
+                else
+                {
+                    respuesta.Successful = false;
+                    respuesta.Message = "El usuario que intenta modificar no existe";
+                    return respuesta;
+                }
+
+
+            }
+            catch (Exception ex) {
+            
+                respuesta.Successful = false;
+                respuesta.Message = $"No se guardó exitosamente la persona {ex}";
+                return respuesta;
+            }
+        }
+
+        public async Task<Respuesta<string>> EliminarUsuario(int ID)
+        {
+
+            var respuesta = new Respuesta<string>();
+            {
+                try
+                {
+                    var valid = _usuarioContext.Usuarios.FirstOrDefault(p => p.Id == ID);
+
+                    if (valid != null)
+                    {
+
+                        _usuarioContext.Usuarios.Remove(valid);
+                        await _usuarioContext.SaveChangesAsync();
+                        respuesta.Successful = true;
+                        respuesta.Message = $"Se elimino correctamente el usuario {valid?.Nombre}";
+
+                        return respuesta;
+                    }
+                    else
+                    {
+                        respuesta.Successful = false;
+                        respuesta.Message = "El usuario que intentaste eliminar no existe";
+                        return respuesta;
+                    }
+                }
+                catch
+                {
+                    respuesta.Successful = false;
+                    respuesta.Message = "El usuario no se pudo eliminar";
+                    return respuesta;
+                }
+            }
+            
         }
     }
 }
