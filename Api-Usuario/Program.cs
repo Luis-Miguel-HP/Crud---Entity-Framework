@@ -17,6 +17,19 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IUsuario, ServicioUsuario>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Libre",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -26,6 +39,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("Libre");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
