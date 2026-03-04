@@ -11,11 +11,13 @@ namespace Api_Usuario.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuario _Iusuario;
+        private readonly IAutenticacion _autenticacion;
 
-        public UsuarioController(IUsuario _user)
+        public UsuarioController(IUsuario _user,IAutenticacion _Aut)
 
         {
             _Iusuario = _user;
+            _autenticacion = _Aut;
         }
         
         
@@ -47,8 +49,11 @@ namespace Api_Usuario.Controllers
 
         public async Task<ActionResult<Respuesta<string>>>
             
-            EliminarUsuario(int ID) => await _Iusuario.EliminarUsuario(ID); 
+            EliminarUsuario(int ID) => await _Iusuario.EliminarUsuario(ID);
 
+        [HttpPost("login")] 
+        public async Task<ActionResult<string>>
+            Autenticacion(string nombre, string ps) => await _autenticacion.Autenticacion(nombre, ps);
     }
 
 

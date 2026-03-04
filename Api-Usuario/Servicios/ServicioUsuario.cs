@@ -18,6 +18,8 @@ namespace Api_Usuario.Servicios
 
         public async Task<Respuesta<string>> AgregarUsuario(Usuario user)
         {
+
+            // hacemos la modificacion para que la contraseña que se guarden de ahora en adelante se guarde con el hash en la base de datos
             var respuesta = new Respuesta<string>();
 
             try
@@ -35,6 +37,8 @@ namespace Api_Usuario.Servicios
                     return respuesta;
                 }
 
+                // aqui encriptamos la contraseña
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
                 _usuarioContext.Usuarios.Add(user);
                 await _usuarioContext.SaveChangesAsync();
 
