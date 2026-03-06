@@ -39,6 +39,7 @@ namespace Api_Usuario.Servicios
 
                 // aqui encriptamos la contraseña
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            
                 _usuarioContext.Usuarios.Add(user);
                 await _usuarioContext.SaveChangesAsync();
 

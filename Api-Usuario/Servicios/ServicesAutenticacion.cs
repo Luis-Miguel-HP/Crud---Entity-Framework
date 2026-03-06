@@ -16,36 +16,45 @@ namespace Api_Usuario.Servicios
 
 
 
-        public async Task<string> Autenticacion(string userName, string password) {
-                
-        
+        public async Task<string> Autenticacion(string userName, string password)
+        {
             try
-            {   
-                var user= await _usuarioContext.Usuarios.FirstOrDefaultAsync(p => p.Nombre == userName);
+            {
+                Console.WriteLine($"Usuario recibido: {userName}");
+                Console.WriteLine($"Password recibido: {password}");
 
-                if (user?.Nombre == null) {
+                var user = await _usuarioContext
+                    .Usuarios
+                    .FirstOrDefaultAsync(p => p.Nombre == userName);
+
+                if (user == null)
+                {
+                    Console.WriteLine("Usuario NO encontrado");
                     return null;
                 }
-                else
+
+                Console.WriteLine($"Hash en DB: {user.Password}");
+                Console.WriteLine($"Longitud hash: {user.Password.Length}");
+
+                bool valido = BCrypt.Net.BCrypt.Verify(password, user.Password);
+
+                Console.WriteLine($"Resultado Verify: {valido}");
+
+                if (!valido)
                 {
-                    bool valido = BCrypt.Net.BCrypt.Verify(user.Password, password);
-                    if (!valido) {
-                        return null;
-                    }
-                    else
-                    {
-                        Console.WriteLine();
-                        var token = new TokenServices();
-                        string Token =token.GeneradorToken(user.Nombre,  user.Id.ToString());
-                        return Token;
-                    }
+                    return null;
                 }
-                    
+
+                var tokenService = new TokenServices();
+                string token = tokenService.GeneradorToken(user.Nombre, user.Id.ToString());
+
+                return token;
             }
-            catch (Exception ex) { 
-                return ex.Message;
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
             }
-            
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Api_Usuario.Modelo
 
         [Required(ErrorMessage = "Este campo es requerido")]
         [StringLength(50)]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "correo no valido")]
         public string Correo { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]

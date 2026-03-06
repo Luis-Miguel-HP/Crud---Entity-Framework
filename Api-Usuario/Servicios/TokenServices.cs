@@ -19,31 +19,56 @@ namespace Api_Usuario.Servicios
             _token = SecretToken;
         }
 
-        public string GeneradorToken(String nombre, string id)
+        public string GeneradorToken(string nombre, string id)
         {
-            var Claims = new List<Claim>
+            var key = Encoding.UTF8.GetBytes("MiClaveSuperSecretaParaFirmarJWT1234567890");
+
+            var claims = new[]
             {
-                new Claim(ClaimTypes.Name, nombre),
-                new Claim(ClaimTypes.NameIdentifier, id),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_token));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            new Claim(ClaimTypes.Name, nombre),
+            new Claim(ClaimTypes.NameIdentifier, id)
+        };
 
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(1),
+                signingCredentials: new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256)
+            );
 
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+        // metodo para leer el token que ha expirado o que va expirar
+
+        //claims principal es una clase de .net para representar contextos de seguridad, por eso usamos claim,etc
+
+        public ClaimsPrincipal LeerTokenExpirado(string token)
+        {
+            var ParametrosDeValidacion = new TokenValidationParameters
             {
-                Subject = new ClaimsIdentity(Claims),
-                Expires = DateTime.UtcNow.AddMinutes(10), // El token expira en 24 horas
-                SigningCredentials = creds
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = false,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MiClaveSuperSecretaParaFirmarJWT1234567890")),
+                ValidateLifetime = false
             };
+            
+            var TokenHandler = new JwtSecurityTokenHandler();
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var Principal = TokenHandler.ValidateToken(
+                token,
+                ParametrosDeValidacion,
+                out SecurityToken securityToken);
 
-            // 5. Serializar el token a una cadena JWT
-            return tokenHandler.WriteToken(token);
+                 var jwtSecurityToken = securityToken as JwtSecurityToken;
+
+                if (jwtSecurityToken == null)
+                throw new SecurityTokenException("Token inválido");
+
+            return Principal;
+
         }
     }
 }
