@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IUsuario, ServicioUsuario>();
 builder.Services.AddScoped<IAutenticacion, ServicesAutenticacion>();
+builder.Services.AddScoped<IProducto, ServicesProductos>();
 
 builder.Services.AddCors(options =>
 {

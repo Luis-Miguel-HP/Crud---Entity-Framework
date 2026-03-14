@@ -14,12 +14,14 @@ namespace Api_Usuario.Controllers
     {
         private readonly IUsuario _Iusuario;
         private readonly IAutenticacion _autenticacion;
+        private readonly IProducto _producto;
 
-        public UsuarioController(IUsuario _user, IAutenticacion _Aut)
+        public UsuarioController(IUsuario _user, IAutenticacion _Aut, IProducto prod)
 
         {
             _Iusuario = _user;
             _autenticacion = _Aut;
+            _producto = prod;
         }
 
 
@@ -82,7 +84,35 @@ namespace Api_Usuario.Controllers
 
 
         }
+
+        //Aqui empieza todo los endpoint que tienen que ver con, producto, categoria y proveedor
+
+
+        [HttpGet("/InformacionProducto")]
+            public async Task<ActionResult<Respuesta<string>>>
+
+                InformacionProducto() => await _producto.InformacionProducto();
+
+
+        [HttpGet("/ObtenerProductosCategoria")]
+            public async Task<ActionResult<Respuesta<List<ProductoDTO>>>>
+                ProductosCategoriaEspecifica(int idCategoria) => await _producto.ProductosCategoriaEspecifica(idCategoria);
+
+        [HttpGet("/ObtenerProductosProveedor")]
+        public async Task<ActionResult<Respuesta<List<ProductoDTO>>>>
+            ProductosProveedorEspecifica(string proveedor) => await _producto.ProductosProveedorEspecifica(proveedor);
+
+
+        [HttpGet("/ProductosTotales")]
+        public async Task<ActionResult<Respuesta<string>>>
+            cantidadTotalProducto() => await _producto.cantidadTotalProducto();
+
+
+
+
     }
+
+
 
 }
 

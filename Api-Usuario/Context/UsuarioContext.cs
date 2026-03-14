@@ -15,6 +15,12 @@ namespace Api_Usuario.Context
         }
         public DbSet<Usuario> Usuarios { get; set; }
 
+
+       //contexto de las nuevas tablas
+        public DbSet<Categoría> Categoría {  get; set; }
+        public DbSet<Proveedor> Proveedor { get; set; }
+        public DbSet<Producto> Producto {  get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
