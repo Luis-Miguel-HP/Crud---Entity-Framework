@@ -108,6 +108,9 @@ namespace Api_Usuario.Controllers
             cantidadTotalProducto() => await _producto.cantidadTotalProducto();
 
 
+        [HttpGet("/LeerJsonUsuariosGuardados")]
+            public async Task<ActionResult<Respuesta<UsuarioLog>>>
+                LeerLogUsuarios() => await _Iusuario.LeerLogUsuarios();
 
 
     }

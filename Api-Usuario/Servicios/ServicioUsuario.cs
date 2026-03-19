@@ -2,7 +2,11 @@
 using Api_Usuario.DTO;
 using Api_Usuario.Modelo;
 using Microsoft.EntityFrameworkCore;
-
+using System.Net.Http.Json;
+using System.Net.NetworkInformation;
+using System.Text.Json.Serialization;
+//using Newtonsoft.Json;
+using System.Text.Json;
 namespace Api_Usuario.Servicios
 {
     public class ServicioUsuario : IUsuario
@@ -14,7 +18,7 @@ namespace Api_Usuario.Servicios
             _usuarioContext = contexto;
         }
 
-    
+
 
         public async Task<Respuesta<string>> AgregarUsuario(Usuario user)
         {
@@ -27,8 +31,8 @@ namespace Api_Usuario.Servicios
 
             {
                 //aqui validamos en Usuarios para ver si al menos uno de esos usuarios tiene un correo igual al de user
-                    var existe = await _usuarioContext.Usuarios
-                    .AnyAsync(u => u.Correo == user.Correo);
+                var existe = await _usuarioContext.Usuarios
+                .AnyAsync(u => u.Correo == user.Correo);
 
                 if (existe)
                 {
@@ -39,9 +43,20 @@ namespace Api_Usuario.Servicios
 
                 // aqui encriptamos la contraseña
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            
+
                 _usuarioContext.Usuarios.Add(user);
                 await _usuarioContext.SaveChangesAsync();
+
+                try
+                {
+                    ServicesLog.GuardarUsuario(user);
+
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+
 
                 respuesta.Successful = true;
                 respuesta.Message = "Se guardó exitosamente la persona";
@@ -56,10 +71,10 @@ namespace Api_Usuario.Servicios
             }
         }
 
-        public async Task<Respuesta<Usuario>>BuscarUsuarioPorId(int ID)
+        public async Task<Respuesta<Usuario>> BuscarUsuarioPorId(int ID)
         {
             var respuesta = new Respuesta<Usuario>();
-   
+
             try
             {
                 var res = await _usuarioContext.Usuarios.FirstOrDefaultAsync(p => p.Id == ID);
@@ -67,7 +82,8 @@ namespace Api_Usuario.Servicios
                 respuesta.Successful = true;
                 return respuesta;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
 
                 respuesta.Successful = false;
                 respuesta.Errors.Add(ex.Message);
@@ -90,13 +106,15 @@ namespace Api_Usuario.Servicios
 
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 respuesta.Successful = false;
                 respuesta.Errors.Add(ex.Message);
                 return respuesta;
             }
         }
 
+        //Metodo que actualiza a los usuarios
         public async Task<Respuesta<string>> ActualizarUsuario(int ID, Usuario user)
         {
             var respuesta = new Respuesta<string>();
@@ -122,14 +140,16 @@ namespace Api_Usuario.Servicios
 
 
             }
-            catch (Exception ex) {
-            
+            catch (Exception ex)
+            {
+
                 respuesta.Successful = false;
                 respuesta.Message = $"No se guardó exitosamente la persona {ex}";
                 return respuesta;
             }
         }
 
+        //Metodo que elimina a los usuarios
         public async Task<Respuesta<string>> EliminarUsuario(int ID)
         {
 
@@ -163,7 +183,49 @@ namespace Api_Usuario.Servicios
                     return respuesta;
                 }
             }
-            
+
         }
+
+        public async Task<Respuesta<UsuarioLog>> LeerLogUsuarios()
+        {
+            var respuesta = new Respuesta<UsuarioLog>();
+
+            try
+            {
+                string rutaArchivo = Path.Combine("Logs", "usuario.txt");
+
+                if (!File.Exists(rutaArchivo))
+                {
+                    respuesta.Successful = false;
+                    respuesta.Message = "El archivo no existe";
+                    return respuesta;
+                }
+
+                var jsonString = await File.ReadAllTextAsync(rutaArchivo);
+
+                if (string.IsNullOrWhiteSpace(jsonString))
+                {
+                    respuesta.Successful = true;
+                    respuesta.DataList = new List<UsuarioLog>();
+                    return respuesta;
+                }
+
+                var datosUsuario = JsonSerializer.Deserialize<List<UsuarioLog>>(jsonString);
+
+                respuesta.DataList = datosUsuario ?? new List<UsuarioLog>();
+                respuesta.Successful = true;
+
+                return respuesta;
+            }
+            catch (Exception ex)
+            {
+                respuesta.Successful = false;
+                respuesta.Message = $"Error leyendo logs: {ex.Message}";
+                return respuesta;
+            }
+        }
+
+
+
     }
-}
+    }

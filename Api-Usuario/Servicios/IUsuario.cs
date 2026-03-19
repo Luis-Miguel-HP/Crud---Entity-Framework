@@ -14,7 +14,7 @@ namespace Api_Usuario.Servicios
         Task<Respuesta<string>> ActualizarUsuario(int ID, Usuario user);
 
         Task<Respuesta<string>> EliminarUsuario(int id);
-   
+        Task<Respuesta<UsuarioLog>> LeerLogUsuarios();
 
     }
 }
